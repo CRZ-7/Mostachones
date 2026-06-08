@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -449,6 +449,9 @@ dots.forEach((dot,d)=>(dot.addEventListener('click',()=>{
 
 const prevArrow = document.querySelector('.arrow--prev');
 const nextArrow = document.querySelector('.arrow--next');
+const hero = document.querySelector('.hero');
+let touchStartX = 0;
+let touchEndX = 0;
 
 prevArrow.addEventListener('click', () => {
   index = (index - 1 + slides.length) % slides.length;
@@ -460,6 +463,24 @@ nextArrow.addEventListener('click', () => {
   index = (index + 1) % slides.length;
   show();
   resetAuto(manualDelay);
+});
+
+hero.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].clientX;
+});
+
+hero.addEventListener('touchend', (e) => {
+  touchEndX = e.changedTouches[0].clientX;
+  const diff = touchEndX - touchStartX;
+  if (Math.abs(diff) > 40) {
+    if (diff < 0) {
+      index = (index + 1) % slides.length;
+    } else {
+      index = (index - 1 + slides.length) % slides.length;
+    }
+    show();
+    resetAuto(manualDelay);
+  }
 });
 
 const menuToggle = document.querySelector('.menu-toggle');
