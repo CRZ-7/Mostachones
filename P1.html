@@ -1,0 +1,486 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mostachón</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:Inter, sans-serif;
+  background:#fff;
+  color:#222;
+  overflow-x:hidden;
+}
+
+/* HEADER */
+header{
+  position:fixed;
+  top:0;left:0;right:0;
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter:blur(12px);
+  background:rgba(255,255,255,.75);
+  z-index:1000;
+}
+.logo{
+  width:40px;height:40px;
+  border:3px solid #c8a96a;
+  transform:rotate(45deg);
+}
+.cart-wrapper{
+  position:fixed;
+  top:80px;
+  right:0;
+  display:flex;
+  align-items:flex-start;
+  width:44px;
+  overflow:visible;
+  transition:width .4s ease;
+  z-index:999;
+}
+.cart-wrapper.open{
+  width:calc(44px + min(280px, 80vw));
+}
+.menu-toggle{
+  position:relative;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:2px solid #c8a96a;
+  background:#fff;
+  cursor:pointer;
+  transition:.3s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.menu-toggle::after{
+  content:'';
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:0;
+  height:0;
+  border-top:7px solid transparent;
+  border-bottom:7px solid transparent;
+  border-left:10px solid #222;
+  transition:.3s;
+}
+.menu-toggle.open::after{
+  transform:translate(-50%,-50%) rotate(180deg);
+}
+.mobile-menu{
+  width:280px;
+  max-width:80vw;
+  height:calc(100vh - 70px);
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:16px;
+  padding:24px;
+  background:rgba(255,255,255,.98);
+  backdrop-filter:blur(16px);
+  box-shadow:-8px 0 40px rgba(0,0,0,.08);
+  position:absolute;
+  top:0;
+  right:0;
+  transform:translateX(100%);
+  opacity:0;
+  transition:transform .4s ease, opacity .4s ease;
+}
+.cart-wrapper.open .mobile-menu{
+  transform:translateX(0);
+  opacity:1;
+}
+.mobile-menu strong{
+  font-size:16px;
+  letter-spacing:.02em;
+  color:#222;
+}
+.mobile-menu span{
+  font-size:14px;
+  color:#666;
+}
+.mobile-menu a{
+  text-decoration:none;
+  color:#222;
+  font-weight:600;
+  font-size:15px;
+  transition:.3s;
+}
+.mobile-menu a:hover{color:#c8a96a;}
+
+/* HERO */
+.hero{
+  margin-top:90px;
+  display:flex;
+  overflow:hidden;
+  width:100%;
+}
+.slide{
+  min-width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px;
+  transition:all .8s ease;
+}
+.card{
+  display:flex;
+  gap:40px;
+  align-items:center;
+  max-width:1100px;
+}
+.card img{
+  width:420px;
+  border-radius:20px;
+  box-shadow:0 20px 50px rgba(0,0,0,.1);
+  transition:.4s;
+}
+.card img:hover{transform:scale(1.03)}
+.text h1{
+  font-family:"Playfair Display";
+  font-size:32px;
+}
+.text p{
+  margin:10px 0 20px;
+  color:#666;
+}
+button{
+  background:#c8a96a;
+  border:none;
+  padding:12px 20px;
+  color:white;
+  border-radius:10px;
+  cursor:pointer;
+  transition:.3s;
+}
+button:hover{transform:translateY(-2px);opacity:.9}
+
+/* DOTS */
+.dots{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:16px;
+  margin-top:20px;
+}
+.arrow{
+  width:16px;
+  height:16px;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  position:relative;
+  padding:0;
+}
+.arrow::before{
+  content:'';
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:0;
+  height:0;
+  border-top:6px solid transparent;
+  border-bottom:6px solid transparent;
+}
+.arrow--prev::before{border-right:8px solid #222;}
+.arrow--next::before{border-left:8px solid #222;}
+.arrow:hover::before{border-color:#c8a96a;}
+.dot{
+  display:inline-block;
+  width:8px;height:8px;
+  background:#ccc;
+  border-radius:50%;
+  margin:0 4px;
+}
+.dot.active{background:#c8a96a}
+
+/* SECCIONES */
+.section{
+  padding:80px 40px;
+  max-width:1200px;
+  margin:auto;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+}
+
+.item{
+  position:relative;
+  background:#fff;
+  border-radius:20px;
+  padding:20px 20px 20px 32px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+  transition:.3s;
+}
+.item:hover{transform:translateY(-5px)}
+
+.item::before{
+  content:'•';
+  position:absolute;
+  top:22px;
+  left:16px;
+  font-size:18px;
+  color:#c8a96a;
+}
+
+.icon{display:none;}
+
+.card-secondary{
+  background:#fff;
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+  transition:.3s;
+}
+.card-secondary:hover{transform:translateY(-5px)}
+
+.card-secondary h3{
+  font-family:"Playfair Display";
+  margin-bottom:12px;
+}
+
+.card-secondary p{
+  color:#666;
+  line-height:1.6;
+  margin-bottom:18px;
+}
+
+footer{
+  padding:60px 40px;
+  background:#f7f5f0;
+  color:#666;
+  text-align:center;
+  margin-top:80px;
+}
+
+/* ANIMATION */
+.fade{
+  opacity:0;
+  transform:translateY(20px);
+  transition:1s;
+}
+.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+@media (max-width: 900px) {
+  .cart-wrapper{display:flex;}
+  .card{flex-direction:column;align-items:flex-start;}
+  .card img{width:100%;}
+  .hero{margin-top:80px;padding:18px;}
+}
+
+@media (max-width: 640px) {
+  .section{padding:60px 20px;}
+  header{height:60px;}
+  .hero{margin-top:70px;}
+  .cart-wrapper{top:80px;}
+  .mobile-menu{height:calc(100vh - 60px);}
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo"></div>
+</header>
+
+<div class="cart-wrapper">
+  <button class="menu-toggle" aria-expanded="false" aria-label="Abrir carrito"></button>
+  <nav class="mobile-menu" aria-label="Carrito de compras">
+    <strong>Carrito</strong>
+    <span>3 artículos añadidos</span>
+    <a href="#">Ver carrito</a>
+    <a href="#">Finalizar compra</a>
+  </nav>
+</div>
+
+<div class="hero" id="hero">
+  <div class="slide">
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=800&q=80" alt="Mostachón de fresa y nuez" />
+      <div class="text">
+        <h1>Mostachón tradicional de fresa y nuez</h1>
+        <p>Delicioso merengue con crema, frutas frescas y nueces tostadas para un toque artesanal.</p>
+        <button>Comprar ahora</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=800&q=80" alt="Mostachón mango y coco" />
+      <div class="text">
+        <h1>Mostachón mango y coco</h1>
+        <p>Suave, tropical y cremoso, con una base delicada y un acabado luminoso.</p>
+        <button>Agregar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=800&q=80" alt="Mostachón limón y lavanda" />
+      <div class="text">
+        <h1>Mostachón limón y lavanda</h1>
+        <p>Aromático y refrescante, con notas florales y un toque cítrico suave.</p>
+        <button>Agregar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1505253213348-cd54c92b37b0?auto=format&fit=crop&w=800&q=80" alt="Mostachón chocolate oscuro" />
+      <div class="text">
+        <h1>Mostachón chocolate oscuro</h1>
+        <p>Intenso, cremoso y con un acabado elegante para los amantes del chocolate.</p>
+        <button>Agregar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="slide">
+    <div class="card">
+      <img src="https://images.unsplash.com/photo-1511690743698-d9d85f2fbf38?auto=format&fit=crop&w=800&q=80" alt="Mostachón frutos del bosque" />
+      <div class="text">
+        <h1>Mostachón frutos del bosque</h1>
+        <p>Delicado y frutal, con una mezcla brillante de frutos rojos y crema ligera.</p>
+        <button>Agregar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dots">
+  <button class="arrow arrow--prev" aria-label="Anterior"></button>
+  <span class="dot active"></span>
+  <span class="dot"></span>
+  <span class="dot"></span>
+  <span class="dot"></span>
+  <span class="dot"></span>
+  <button class="arrow arrow--next" aria-label="Siguiente"></button>
+</div>
+
+<section class="section fade">
+  <h2>Personaliza tu mostachón</h2>
+  <div class="grid">
+    <div class="item"><strong>Base</strong><p>Elige entre merengue crujiente, cookie suave o galleta delicada.</p></div>
+    <div class="item"><strong>Frutas</strong><p>Selecciona fresas, mango o limón para jugar con frescura y color.</p></div>
+    <div class="item"><strong>Toppings</strong><p>Agrega nueces, chips o chocolate para un perfil texturizado.</p></div>
+    <div class="item"><strong>Crema</strong><p>Finaliza con crema de vainilla, caramelo o berry.</p></div>
+  </div>
+</section>
+
+<section class="section fade">
+  <h2>Productos destacados</h2>
+  <div class="grid">
+    <div class="card-secondary">
+      <h3>Mostachón fresa premium</h3>
+      <p>Una edición limitada con merengue suave, crema ligera y una corona de frutas frescas.</p>
+      <button>Agregar</button>
+    </div>
+    <div class="card-secondary">
+      <h3>Mango & Coco Deluxe</h3>
+      <p>Textura sedosa y aromas tropicales en una presentación elegante.</p>
+      <button>Agregar</button>
+    </div>
+    <div class="card-secondary">
+      <h3>Caramelo salado</h3>
+      <p>Nota gourmet con un toque salado y crumble de almendra.</p>
+      <button>Agregar</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Información adicional discreta de la marca • contacto • redes
+</footer>
+
+<script>
+let index = 0;
+const slides = document.querySelectorAll(".slide");
+const dots = document.querySelectorAll(".dot");
+
+function show(){
+  slides.forEach((s,i)=>{
+    s.style.transform = `translateX(-${index*100}%)`;
+  });
+  dots.forEach(d=>d.classList.remove("active"));
+  dots[index].classList.add("active");
+}
+
+let autoDelay = 7000;
+let manualDelay = 5000;
+let timer = null;
+
+function resetAuto(delay = autoDelay) {
+  if (timer) clearInterval(timer);
+  timer = setInterval(() => {
+    index = (index + 1) % slides.length;
+    show();
+  }, delay);
+}
+
+show();
+resetAuto();
+
+dots.forEach((dot,d)=>(dot.addEventListener('click',()=>{
+  index = d;
+  show();
+  resetAuto(autoDelay);
+})));
+
+const prevArrow = document.querySelector('.arrow--prev');
+const nextArrow = document.querySelector('.arrow--next');
+
+prevArrow.addEventListener('click', () => {
+  index = (index - 1 + slides.length) % slides.length;
+  show();
+  resetAuto(manualDelay);
+});
+
+nextArrow.addEventListener('click', () => {
+  index = (index + 1) % slides.length;
+  show();
+  resetAuto(manualDelay);
+});
+
+const menuToggle = document.querySelector('.menu-toggle');
+const mobileMenu = document.querySelector('.mobile-menu');
+const cartWrapper = document.querySelector('.cart-wrapper');
+
+menuToggle.addEventListener('click', () => {
+  const isOpen = mobileMenu.classList.toggle('open');
+  cartWrapper.classList.toggle('open', isOpen);
+  menuToggle.classList.toggle('open', isOpen);
+  menuToggle.setAttribute('aria-expanded', isOpen);
+});
+
+// fade scroll
+const observer = new IntersectionObserver(e=>{
+  e.forEach(el=>{
+    if(el.isIntersecting) el.target.classList.add("show");
+  });
+});
+document.querySelectorAll(".fade").forEach(el=>observer.observe(el));
+</script>
+
+</body>
+</html>
